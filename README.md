@@ -79,3 +79,26 @@ npm run dev
 
 领域：数据工程
 子方向：数据采集、爬虫与RPA
+
+## 实体来源数据索引与重放清单
+
+DOM解析配置在登记/更正时产出版本快照（`配置版本` + 12 位`解析签名`），
+实体抽取据此按“页面 + 字段 + 解析签名”建立来源索引，每次检索选中的命中
+回写到重放清单，由 DOM 解析按清单里的快照复验，不会改跑当前选择器。
+
+| 接口 | 说明 |
+| --- | --- |
+| `GET /api/entity-source-index` | 按页面/字段/签名/版本检索可复验的实体批次 |
+| `POST /api/entity-source-index/search` | 检索并回写选中命中（`writeback` 默认 true） |
+| `POST /api/entity-source-index/writeback` | 只回写选中实体，按来源版本拆清单 |
+| `GET /api/entity-source-index/unsigned` | 历史未补签名的记录与无法补签名原因 |
+| `GET /api/replay-manifest` | 重放清单（可按状态/签名/页面/版本过滤） |
+| `POST /api/replay-manifest/{id}/submit-to-dom` | 值班员把旧签名命中送回 DOM 解析复验 |
+| `POST /api/replay-manifest/{id}/dom-replay` | DOM 解析按清单快照复验实际字段 |
+| `GET /api/dom-parser-configs/{id}/snapshots` | 配置的全部版本快照 |
+| `POST /api/dom-parser-configs/{id}/revise` | 更正选择器并自动升版、推送新签名 |
+
+复验结果状态为 `已复验` / `部分复验` / `无法复验`；无法复验时给出
+`无法复验版本` 与 `无法复验明细`，说明哪个版本或哪条历史记录不能复验。
+
+领域测试：`cd backend && .venv/bin/python -m unittest discover -s tests -v`

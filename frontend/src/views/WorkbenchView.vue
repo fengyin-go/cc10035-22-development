@@ -90,6 +90,9 @@
       <span>共 {{ total }} 条{{ meta.name }}记录</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
+
+    <EntitySourcePanel v-if="meta.key === 'entity_extract'" />
+    <DomConfigPanel v-if="meta.key === 'dom_parser'" />
   </section>
 </template>
 
@@ -103,6 +106,8 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/backend-service'
+import DomConfigPanel from '@/components/DomConfigPanel.vue'
+import EntitySourcePanel from '@/components/EntitySourcePanel.vue'
 import type { EntryRow } from '@/data/types'
 
 const props = defineProps<{ moduleKey: string }>()
